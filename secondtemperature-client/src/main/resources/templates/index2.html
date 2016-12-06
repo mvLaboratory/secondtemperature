@@ -1,0 +1,67 @@
+<html xmlns:th="http://www.springframework.org/schema/mvc">
+       <head>
+              <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+              <script th:inline="javascript">
+                  google.charts.load('current', {'packages':['corechart']});
+                  google.charts.setOnLoadCallback(drawChart);
+
+                  function drawChart() {
+                      /*<![CDATA[*/
+                      var readings = /*[[${readings}]]*/[];
+
+                      var text = "";
+
+                      var data = new google.visualization.DataTable();
+                      data.addColumn('date', 'Timestamp');
+                      data.addColumn('number', 'Temperature');
+
+
+                      var readingRows = [];
+                      for (i = 0; i < readings.length; i++) {
+                          var readingRow = [];
+                          readingRow.push(new Date(readings[i].timestamp));
+                          readingRow.push(readings[i].value);
+                          readingRows.push(readingRow);
+                      }
+
+                      text += "<table style=\"width:100%\">";
+                      text += "<tr>";
+                      text += "<th>Timestamp</th>";
+                      text += "<th>Temperature</th>";
+                      text += "</tr>";
+                      for (i = 0; i < readingRows.length; i++) {
+                          //text += (readingRows[i][0] + "|" + readingRows[i][1] + "#");
+
+                          text += "<tr>";
+                          text += "<th>" + readingRows[i][0] + "</th>";
+                          text += "<th>" + readingRows[i][1] + "</th>";
+                          text += "</tr>";
+                      }
+                      text += "</table>";
+
+                      document.getElementById("demo").innerHTML = text;
+
+                      data.addRows(
+                            readingRows
+                      );
+
+                      var options = {
+                          title: 'Temperature change',
+                          curveType: 'function',
+                          legend: { position: 'bottom' }
+                      };
+
+                      var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+                      chart.draw(data, options);
+
+
+                      /*]]>*/
+                  }
+              </script>
+       </head>
+       <body>
+              <div id="curve_chart" style="width: 900px; height: 500px"></div>
+              <p id="demo"></p>
+       </body>
+</html>
